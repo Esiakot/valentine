@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { put, list } from '@vercel/blob';
+import { put } from '@vercel/blob';
 
 export async function POST(request: NextRequest) {
   try {
+    // Vérifier que le token Blob est configuré
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      return NextResponse.json({ 
+        error: 'BLOB_READ_WRITE_TOKEN non configuré. Ajoute Blob Storage dans Vercel.' 
+      }, { status: 500 });
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const name = formData.get('name') as string;
@@ -22,18 +29,9 @@ export async function POST(request: NextRequest) {
     const fileExtension = file.name.split('.').pop() || 'gif';
     const fileName = `valentine/${cleanName}.${fileExtension}`;
 
-    // Supprimer l'ancienne image si elle existe
-    try {
-      const { blobs } = await list({ prefix: `valentine/${cleanName}.` });
-      // Les anciennes images seront écrasées par le même nom
-    } catch (e) {
-      // Ignorer si pas d'images existantes
-    }
-
     // Upload vers Vercel Blob
     const blob = await put(fileName, file, {
       access: 'public',
-      addRandomSuffix: false,
     });
 
     return NextResponse.json({ 
@@ -42,8 +40,10 @@ export async function POST(request: NextRequest) {
       imagePath: blob.url
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erreur upload:', error);
-    return NextResponse.json({ error: 'Erreur lors de l\'upload' }, { status: 500 });
+    return NextResponse.json({ 
+      error: error?.message || 'Erreur lors de l\'upload' 
+    }, { status: 500 });
   }
 }

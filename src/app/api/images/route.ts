@@ -6,6 +6,11 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const name = searchParams.get('name');
 
+    // Si pas de token configuré, retourner vide
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      return NextResponse.json({ images: [], imageForName: null });
+    }
+
     // Lister tous les blobs dans le dossier valentine/
     const { blobs } = await list({ prefix: 'valentine/' });
 
