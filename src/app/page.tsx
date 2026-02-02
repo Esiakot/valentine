@@ -102,7 +102,7 @@ export default function AdminPage() {
         
         <div className="upload-section">
           <label className="file-label">
-            📷 Choisir une image/GIF personnalisée
+            📷 Choisir une image, c pas obligé, y aura le gif hamster explosssiooijudahodeo
             <input 
               ref={fileInputRef}
               type="file" 
