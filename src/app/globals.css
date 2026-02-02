@@ -1,14 +1,16 @@
 /* RESET ET BASE */
 body {
     margin: 0;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: #ffdde1; 
     font-family: 'Arial', sans-serif;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     transition: background-color 0.5s ease;
+    padding: 20px 0;
 }
 
 body.party-mode {
@@ -125,6 +127,8 @@ h1 {
     background: #ffffffe6;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    max-height: none;
+    margin: 20px auto;
 }
 
 .input-group {

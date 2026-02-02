@@ -29,9 +29,14 @@ export async function POST(request: NextRequest) {
     const fileExtension = file.name.split('.').pop() || 'gif';
     const fileName = `valentine/${cleanName}.${fileExtension}`;
 
-    // Upload vers Vercel Blob
-    const blob = await put(fileName, file, {
+    // Convertir le File en ArrayBuffer pour Vercel Blob (fix content-length header)
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Upload vers Vercel Blob avec le buffer et le content-type
+    const blob = await put(fileName, buffer, {
       access: 'public',
+      contentType: file.type,
     });
 
     return NextResponse.json({ 
