@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
+import { put, list } from '@vercel/blob';
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,25 +20,26 @@ export async function POST(request: NextRequest) {
     
     // Obtenir l'extension du fichier
     const fileExtension = file.name.split('.').pop() || 'gif';
-    const fileName = `${cleanName}.${fileExtension}`;
+    const fileName = `valentine/${cleanName}.${fileExtension}`;
 
-    // Créer le dossier images s'il n'existe pas
-    const imagesDir = path.join(process.cwd(), 'public', 'images');
-    if (!existsSync(imagesDir)) {
-      await mkdir(imagesDir, { recursive: true });
+    // Supprimer l'ancienne image si elle existe
+    try {
+      const { blobs } = await list({ prefix: `valentine/${cleanName}.` });
+      // Les anciennes images seront écrasées par le même nom
+    } catch (e) {
+      // Ignorer si pas d'images existantes
     }
 
-    // Convertir le fichier en buffer et l'écrire
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    
-    const filePath = path.join(imagesDir, fileName);
-    await writeFile(filePath, buffer);
+    // Upload vers Vercel Blob
+    const blob = await put(fileName, file, {
+      access: 'public',
+      addRandomSuffix: false,
+    });
 
     return NextResponse.json({ 
       success: true, 
       fileName,
-      imagePath: `/images/${fileName}`
+      imagePath: blob.url
     });
 
   } catch (error) {

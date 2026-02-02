@@ -2,35 +2,18 @@
 
 import { useState, useEffect, useRef } from 'react';
 
-interface StoredImage {
-  name: string;
-  path: string;
-}
-
 export default function AdminPage() {
   const [name, setName] = useState('');
   const [generatedLink, setGeneratedLink] = useState('');
   const [origin, setOrigin] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
-  const [storedImages, setStoredImages] = useState<StoredImage[]>([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setOrigin(window.location.origin);
-    loadStoredImages();
   }, []);
-
-  const loadStoredImages = async () => {
-    try {
-      const response = await fetch('/api/images');
-      const data = await response.json();
-      setStoredImages(data.images || []);
-    } catch (error) {
-      console.error('Erreur chargement images:', error);
-    }
-  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -74,7 +57,6 @@ export default function AdminPage() {
 
       if (data.success) {
         setUploadStatus(`✅ Image uploadée : ${data.imagePath}`);
-        loadStoredImages();
         setPreviewImage(null);
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
@@ -166,20 +148,6 @@ export default function AdminPage() {
           <button onClick={copyToClipboard} className="btn copy-btn">
             📋 Copier
           </button>
-        </div>
-      )}
-
-      {storedImages.length > 0 && (
-        <div className="stored-images">
-          <h2>💾 Images enregistrées</h2>
-          <div className="images-grid">
-            {storedImages.map((img) => (
-              <div key={img.path} className="image-card">
-                <img src={img.path} alt={img.name} />
-                <span>{img.name}</span>
-              </div>
-            ))}
-          </div>
         </div>
       )}
     </div>
