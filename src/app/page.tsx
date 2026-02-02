@@ -95,7 +95,7 @@ export default function AdminPage() {
         <input 
           className="admin-input"
           type="text" 
-          placeholder="Nom de l'amoureuse (ex: Maya)" 
+          placeholder="Nom de l'amoureuse" 
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
